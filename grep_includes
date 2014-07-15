@@ -1,5 +1,18 @@
 #!/usr/bin/perl
 
+# Usage: Just like grep (mostly)
+# 
+# Will grep the file provided, along with any other files included/required by the file
+# Supposed to work with PHP, probably doesn't cover every include keyword.
+# Currently only supports one file being passed, at the end, everything else considered an
+# argument to grep.
+#
+# Example:
+# $ grep -c "DB_NAME" index.php
+# 0
+# $ grep_includes -l "DB_NAME" index.php
+# Scripts/sql/inc.sql.php
+
 use warnings;
 use strict;
 use Cwd;
