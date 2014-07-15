@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+use Cwd;
+
+exit if @ARGV < 2;
+
+my $cwd = getcwd();
+my $file = pop(@ARGV);
+
+system ("grep " . join(' ',@ARGV,keys %{{get_includes($file)}}));
+
+sub get_includes {
+    my ($file, %includes) = @_;
+    open my $input, "<", $file or return;
+    local $/ = '';
+    my $php = <$input>;
+    close $input;
+    my @php = split /;|\n/, $php;
+    foreach my $line (@php) {
+        if ($line =~ /(?:require(?:_once)?|include)(?:\s|\()('|")([^\1]+)\1/) {
+            my $next_file = $2;
+            next if $includes{$next_file};
+            $includes{$next_file}++;
+            %includes = get_includes($next_file, %includes);
+        }
+    }
+    return %includes;
+}
